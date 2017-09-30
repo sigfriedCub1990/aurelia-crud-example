@@ -1,0 +1,23 @@
+<template>
+    <form action="">
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" id="firstName" value.bind="activeContact.firstName">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" id="lastName" value.bind="activeContact.lastName">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" id="email" value.bind="activeContact.email">
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" class="form-control" id="phone" value.bind="activeContact.phoneNumber">
+        </div>
+        <div class="from-group">
+            <button type="text" click.delegate="save()" disabled.bind="!canSave" class="btn btn-info">Update</button>
+        </div>
+    </form>
+</template>
