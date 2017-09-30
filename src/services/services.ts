@@ -1,13 +1,15 @@
 import { HttpClient } from "aurelia-http-client";
 import { inject } from "aurelia-framework";
 
+import api from '../config/api';
+
 @inject(HttpClient)
 export class ContactService {
     private http:HttpClient;
     contacts = [];
 
     constructor(http:HttpClient) {
-        http.configure(x => x.withBaseUrl('http://10.3.201.252:2403/contacts/'));
+        http.configure(x => x.withBaseUrl(api.dev + '/contacts/'));
         this.http = http;
     }
 
@@ -18,6 +20,18 @@ export class ContactService {
                 .then(data => {
                     this.contacts = JSON.parse(data.response);
                     resolve(this.contacts)
+                }).catch(err => reject(err));
+        });
+        return promise;
+    }
+
+    createContact(contact) {
+        let promise = new Promise((resolve, reject) => {
+            this.http
+                .post(contact)
+                .then(data => {
+                    let newContact = JSON.parse(data.response);
+                    resolve(newContact);
                 }).catch(err => reject(err));
         });
         return promise;
