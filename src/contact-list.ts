@@ -1,20 +1,18 @@
 
 import {ContactViewed, ContactUpdated, ContactDeleted} from './messages'
+import {ContactService} from "./services/services";
 
 import {EventAggregator} from 'aurelia-event-aggregator'
 import {inject} from 'aurelia-framework'
-import {HttpClient} from "aurelia-http-client";
 
-@inject(EventAggregator)
+@inject(EventAggregator, ContactService)
 export class ContactList {
-    
-    constructor(ea){
+    private _contactService: ContactService;
+
+    constructor(ea, contactService: ContactService){
         this.ea = ea;
         this.contacts = [];
-        this.client = new HttpClient()
-                            .configure(x => {
-                                x.withBaseUrl('http://10.3.201.252:2403/contacts/')
-                            });
+        this._contactService = contactService;
 
         ea.subscribe(ContactViewed, msg => this.select(msg.contact));
         ea.subscribe(ContactUpdated, msg => {
@@ -28,12 +26,10 @@ export class ContactList {
         })
     }
 
-    created(){
-        this.client
-            .get()
-            .then(response => {
-                this.contacts = JSON.parse(response.response);
-            });
+    created() {
+        this._contactService.getContacts()
+            .then(data => this.contacts = data)
+            .catch(err => console.log(err));
     }
 
     select(contact) {
@@ -43,11 +39,12 @@ export class ContactList {
 
     remove(contact) {
         if(confirm('Are you sure that you want to delete this contact?')) {
-            this.client
-                .delete(contact.id)
+            this._contactService
+                .deleteContact(contact.id)
                 .then(reponse => {
                     this.ea.publish(new ContactDeleted(contact))
-                });
+                })
+                .catch(err => console.log(err));
         }
     }
 }

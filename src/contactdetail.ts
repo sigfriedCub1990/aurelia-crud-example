@@ -1,28 +1,29 @@
 import {inject} from 'aurelia-framework'
 import {EventAggregator} from 'aurelia-event-aggregator'
-import {HttpClient} from "aurelia-http-client";
 
+import {ContactService} from "./services/services";
 import {ContactUpdated, ContactViewed} from './messages'
 import {areEqual} from './utility';
 
-@inject(EventAggregator)
+@inject(EventAggregator, ContactService)
 export class ContactDetail {
+    private _contactService: ContactService;
 
-    constructor(eventAggregator) {
+    constructor(eventAggregator, contactService: ContactService) {
         this.event = eventAggregator;
-        this.client = new HttpClient().configure(x => {
-            x.withBaseUrl('http://10.3.201.252:2403/contacts/')
-        });
+        this._contactService = contactService;
     }
 
     activate(params, routeConfig) {
         this.routeConfig = routeConfig;
-        return this.client.get(params.id).then(contact => {
-          this.activeContact = JSON.parse(contact.response);
-          this.routeConfig.navModel.setTitle(this.activeContact.firstName);
-          this.originalContact = JSON.parse(contact.response);
-          this.event.publish(new ContactViewed(this.activeContact));
-        });
+        return this._contactService.getContact(params.id)
+                .then(contact => {
+                    this.activeContact = contact;
+                    this.routeConfig.navModel.setTitle(this.activeContact.firstName);
+                    this.originalContact = contact;
+                    this.event.publish(new ContactViewed(this.activeContact));
+                }
+            );
       }
 
     get canSave() {
@@ -30,11 +31,10 @@ export class ContactDetail {
     }
     
     save() {
-        this.client.put(this.activeContact.id, this.activeContact).then(response => {
-            console.log();
-            this.activeContact = JSON.parse(response.response);
+        this._contactService.updateClient(this.activeContact.id, this.activeContact).then(contact => {
+            this.activeContact = contact
             this.routeConfig.navModel.setTitle(this.activeContact.firstName);
-            this.originalContact = JSON.stringify(this.activeContact);
+            this.originalContact = contact;
             this.event.publish(new ContactUpdated(this.activeContact));
         });
     }
