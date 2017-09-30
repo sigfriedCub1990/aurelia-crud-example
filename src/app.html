@@ -8,8 +8,12 @@
       <a class="navbar-brand" href="#">
         <i class="fa fa-user"></i>
         <span>Contacts</span>
+        <div class="item" style="display:inline">
+          <a class="nav-item nav-link" route-href="route: create_contact;">New contact <span class="sr-only">(current)</span></a>
+        </div>
       </a>
     </div>
+    
   </nav>
 
   <loading-indicator loading.bind="router.isNavigating"></loading-indicator>

@@ -16,4 +16,9 @@ export class ContactUpdated {
     }
   }
   
+  export class ContactCreated {
+    constructor(contact) {
+      this.contact = contact;
+    }
+  }
     

@@ -28,7 +28,7 @@ export class ContactService {
     createContact(contact) {
         let promise = new Promise((resolve, reject) => {
             this.http
-                .post(contact)
+                .post('', contact)
                 .then(data => {
                     let newContact = JSON.parse(data.response);
                     resolve(newContact);

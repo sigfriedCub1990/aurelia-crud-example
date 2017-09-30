@@ -1,5 +1,5 @@
 
-import {ContactViewed, ContactUpdated, ContactDeleted} from './messages'
+import {ContactViewed, ContactUpdated, ContactDeleted, ContactCreated} from './messages'
 import {ContactService} from "./services/services";
 
 import {EventAggregator} from 'aurelia-event-aggregator'
@@ -23,7 +23,11 @@ export class ContactList {
         ea.subscribe(ContactDeleted, msg => {
             let deletedContact = msg.contact;
             this.contacts = this.contacts.filter(contact => contact !== deletedContact);
-        })
+        });
+        ea.subscribe(ContactCreated, msg => {
+            let contact = msg.contact;
+            this.contacts.push(contact);
+        });
     }
 
     created() {

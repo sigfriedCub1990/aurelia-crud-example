@@ -1,0 +1,24 @@
+<template>
+    <form action="">
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" id="firstName" value.bind="contact.firstName">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" id="lastName" value.bind="contact.lastName">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" class="form-control" id="email" value.bind="contact.email">
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" class="form-control" id="phone" value.bind="contact.phoneNumber">
+        </div>
+        <div class="from-group">
+            <button type="text" click.delegate="create()" class="btn btn-info">Create</button>
+            <button type="reset"  click.delegate="create()" class="btn btn-danger">Reset</button>
+        </div>
+    </form>
+</template>
