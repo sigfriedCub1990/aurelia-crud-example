@@ -50,3 +50,12 @@ li.list-group-item > a {
 li.list-group-item.active > a {
   color: white;
 }
+
+.fa.fa-remove:hover {
+  color: rgba(194, 107, 107, 0.47);
+}
+
+li.active .fa.fa-remove:hover {
+  color: red;
+}
+
