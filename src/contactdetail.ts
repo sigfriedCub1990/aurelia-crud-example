@@ -19,25 +19,22 @@ export class ContactDetail {
         this.routeConfig = routeConfig;
         return this.client.get(params.id).then(contact => {
           this.activeContact = JSON.parse(contact.response);
-          this.routeConfig.navModel.setTitle(contact.firstName);
+          this.routeConfig.navModel.setTitle(this.activeContact.firstName);
           this.originalContact = JSON.parse(contact.response);
           this.event.publish(new ContactViewed(this.activeContact));
         });
       }
-
-    getContact() {
-        this.client.get(this.id).then(res => this.activeContact = res);
-    }
 
     get canSave() {
         return this.activeContact.firstName && this.activeContact.lastName;
     }
     
     save() {
-        this.client.post(this.activeContact).then(contact => {
-            this.activeContact = contact;
-            this.routeConfig.navModel.setTitle(contact.firstName);
-            this.originalContact = JSON.parse(JSON.stringify(contact));
+        this.client.put(this.activeContact.id, this.activeContact).then(response => {
+            console.log();
+            this.activeContact = JSON.parse(response.response);
+            this.routeConfig.navModel.setTitle(this.activeContact.firstName);
+            this.originalContact = JSON.stringify(this.activeContact);
             this.event.publish(new ContactUpdated(this.activeContact));
         });
     }
@@ -45,7 +42,6 @@ export class ContactDetail {
     canDeactivate() {
         if(!areEqual(this.originalContact, this.activeContact)){
             let result = confirm('You have unsaved changes. Are you sure you wish to leave?');
-        
             if(!result) {
                 this.event.publish(new ContactViewed(this.activeContact));
             }
