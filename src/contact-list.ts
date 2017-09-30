@@ -1,16 +1,20 @@
-import {EventAggregator} from 'aurelia-event-aggregator'
 
 import {ContactViewed, ContactUpdated} from './messages'
-import {WebAPI} from './web-api'
-import {inject} from 'aurelia-framework'
 
-@inject(WebAPI, EventAggregator)
+import {EventAggregator} from 'aurelia-event-aggregator'
+import {inject} from 'aurelia-framework'
+import {HttpClient} from "aurelia-http-client";
+
+@inject(EventAggregator)
 export class ContactList {
     
-    constructor(api, ea){
-        this.api = api;
+    constructor(ea){
         this.ea = ea;
         this.contacts = [];
+        this.client = new HttpClient()
+                            .configure(x => {
+                                x.withBaseUrl('http://10.3.201.252:2403/')
+                            });
 
         ea.subscribe(ContactViewed, msg => this.select(msg.contact));
         ea.subscribe(ContactUpdated, msg => {
@@ -21,7 +25,11 @@ export class ContactList {
     }
 
     created(){
-        this.api.getContactList().then(contacts => this.contacts = contacts);
+        this.client
+            .get('contacts')
+            .then(response => {
+                this.contacts = JSON.parse(response.response);
+            });
     }
 
     select(contact) {

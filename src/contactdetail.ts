@@ -1,39 +1,40 @@
 import {inject} from 'aurelia-framework'
 import {EventAggregator} from 'aurelia-event-aggregator'
+import {HttpClient} from "aurelia-http-client";
 
 import {ContactUpdated, ContactViewed} from './messages'
-import {WebAPI} from './web-api'
 import {areEqual} from './utility';
 
-@inject(WebAPI, EventAggregator)
+@inject(EventAggregator)
 export class ContactDetail {
 
-    constructor(api, eventAggregator) {
-        this.api = api;
+    constructor(eventAggregator) {
         this.event = eventAggregator;
+        this.client = new HttpClient().configure(x => {
+            x.withBaseUrl('http://10.3.201.252:2403/contacts/')
+        });
     }
 
     activate(params, routeConfig) {
         this.routeConfig = routeConfig;
-    
-        return this.api.getContactDetails(params.id).then(contact => {
-          this.activeContact = contact;
+        return this.client.get(params.id).then(contact => {
+          this.activeContact = JSON.parse(contact.response);
           this.routeConfig.navModel.setTitle(contact.firstName);
-          this.originalContact = JSON.parse(JSON.stringify(contact));
+          this.originalContact = JSON.parse(contact.response);
           this.event.publish(new ContactViewed(this.activeContact));
         });
       }
 
     getContact() {
-        this.api.getContactDetails(this.id).then(res => this.activeContact = res);
+        this.client.get(this.id).then(res => this.activeContact = res);
     }
 
     get canSave() {
-        return this.activeContact.firstName && this.activeContact.lastName && !this.api.isRequesting;
+        return this.activeContact.firstName && this.activeContact.lastName;
     }
     
     save() {
-        this.api.saveContact(this.activeContact).then(contact => {
+        this.client.post(this.activeContact).then(contact => {
             this.activeContact = contact;
             this.routeConfig.navModel.setTitle(contact.firstName);
             this.originalContact = JSON.parse(JSON.stringify(contact));

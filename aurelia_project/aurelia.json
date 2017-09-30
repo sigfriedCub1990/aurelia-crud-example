@@ -93,6 +93,12 @@
             "resources": [
               "nprogress.css"
             ]
+          },
+          {
+            "name": "aurelia-http-client",
+            "main": "aurelia-http-client",
+            "path": "../node_modules/aurelia-http-client/dist/amd",
+            "resources": []
           }
         ]
       }
